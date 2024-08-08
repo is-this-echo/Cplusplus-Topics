@@ -4,7 +4,6 @@
 
 constexpr int cycle = 1000000;
 int value = 0;
-
 std::mutex mtx;
 
 
@@ -33,7 +32,6 @@ int main()
 
     // thread t1(IncrementWithThreadSync);
     // thread t2(IncrementWithThreadSync);
-
     t1.join();
     t2.join();
 
