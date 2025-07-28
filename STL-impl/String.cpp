@@ -52,7 +52,8 @@ public:
     // Move assignment
     String& operator=(String&& other) noexcept
     {
-        if (this != &other) {
+        if (this != &other)
+        {
             delete[] m_data;
             m_data = other.m_data;
             m_size = other.m_size;

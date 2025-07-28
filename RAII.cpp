@@ -13,7 +13,7 @@ Notes on Object lifetime and resource management:
    other programs until the process exits (as we know that each process has its own memory space).
 
 2. When we say 'Resource' we don't just mean memory - it could be file handles, network sockets,
-   database handles, GDI objects. In short, things that we have a finite supply of and so we
+   database handles, GDI objects and mutexes. In short, things that we have a finite supply of and so we
    need to be able to control their usage.
    The 'Scope-bound' aspect means that the lifetime of the object is bound to the scope of a
    variable, so when the variable goes out of scope then the destructor will release the resource.

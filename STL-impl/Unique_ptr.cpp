@@ -21,7 +21,7 @@ public:
 
   // deleting copy constructor and copy assignment operator
   unique_pointer(const unique_pointer &rhs) = delete;
-  unique_pointer &operator=(const unique_pointer &rhs) = delete;
+  unique_pointer& operator=(const unique_pointer &rhs) = delete;
 
   // defining move constructor and move assignment operator
   // transferring the ownership
@@ -30,11 +30,17 @@ public:
     rhs.mPtr = nullptr;
   }
 
-  unique_pointer &operator=(unique_pointer &&rhs) noexcept
+  unique_pointer& operator=(unique_pointer &&rhs) noexcept
   {
+    /*| Expression | Type                  |
+      | ---------- | --------------------- |
+      | `rhs`      | `unique_pointer<T>&&` |
+      | `&rhs`     | `unique_pointer<T>*`  |
+      | `this`     | `unique_pointer<T>*`  |
+    */
     if (&rhs != this)
     {
-      delete this->mPtr;
+      delete this->mPtr; // can also just use delete mPtr;
       this->mPtr = rhs.mPtr;
       rhs.mPtr = nullptr;
       std::cout << "Unique Pointer Moved\n";
@@ -43,12 +49,12 @@ public:
   }
 
   // dereferencing operator
-  T &operator*() const { return *mPtr; }
+  T& operator*() const { return *mPtr; }
 
   // arrow operator returns the underlying pointer
-  T *operator->() const { return mPtr; }
+  T* operator->() const { return mPtr; }
 
-  void reset(T *rhs = nullptr)
+  void reset(T* rhs = nullptr)
   {
     if (mPtr)
       delete mPtr;
@@ -56,11 +62,18 @@ public:
     mPtr = rhs;
   }
 
-  T *get() const { return mPtr; }
+  T* get() const { return mPtr; }
 
+  /* if (myPtr) {  do something  };
+    its explicit so can be used only in boolean contexts and not for int/double etc.
+
+    unique_pointer<int> p(new int(42));
+    int x = p;   // This would compile if operator bool() weren't explicit!
+  */
   explicit operator bool() const { return mPtr != nullptr; }
 
 private:
+
   T *mPtr{nullptr};
 };
 
