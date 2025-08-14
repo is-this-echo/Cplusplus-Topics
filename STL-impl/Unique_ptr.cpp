@@ -20,17 +20,17 @@ public:
   }
 
   // deleting copy constructor and copy assignment operator
-  unique_pointer(const unique_pointer &rhs) = delete;
-  unique_pointer& operator=(const unique_pointer &rhs) = delete;
+  unique_pointer(const unique_pointer& rhs) = delete;
+  unique_pointer& operator=(const unique_pointer& rhs) = delete;
 
   // defining move constructor and move assignment operator
   // transferring the ownership
-  unique_pointer(unique_pointer &&rhs) noexcept : mPtr(rhs.mPtr)
+  unique_pointer(unique_pointer&& rhs) noexcept : mPtr(rhs.mPtr)
   {
     rhs.mPtr = nullptr;
   }
 
-  unique_pointer& operator=(unique_pointer &&rhs) noexcept
+  unique_pointer& operator=(unique_pointer&& rhs) noexcept
   {
     /*| Expression | Type                  |
       | ---------- | --------------------- |
