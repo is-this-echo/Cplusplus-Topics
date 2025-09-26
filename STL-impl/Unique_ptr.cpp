@@ -90,6 +90,7 @@ struct A
 int main()
 {
   unique_pointer<A> ptr(new A(1, "Dfs"));
+
   std::cout << ptr->mId << '\n';
   std::cout << ptr->mName << '\n';
 

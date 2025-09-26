@@ -3,7 +3,8 @@
 #include <mutex>
 #include <condition_variable>
 
-class BoundedBlockingQueue {
+class BoundedBlockingQueue
+{
 public:
     // Constructor initializes the queue with a capacity limit.
     BoundedBlockingQueue(int capacity) : capacity_(capacity), count_(0)
@@ -19,7 +20,8 @@ public:
         not_full_condition_.wait(lock, [this] { return count_ < capacity_; });
         queue_.push(element);
         ++count_;
-        // Notify one waiting thread (if any) that an item was dequeued
+
+        // Notify one waiting thread (if any) that an item is now available for dequeue
         not_empty_condition_.notify_one();
     }
 
@@ -32,13 +34,14 @@ public:
         int value = queue_.front();
         queue_.pop();
         --count_;
-        // Notify one waiting thread (if any) that space is now available
+
+        // Notify one waiting producer that space is now available
         not_full_condition_.notify_one();
         return value;
     }
 
     // Get the current size of the queue.
-    int size() 
+    int size()
     {
         std::lock_guard<std::mutex> lock(mutex_);
         return count_;

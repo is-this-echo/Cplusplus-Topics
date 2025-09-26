@@ -53,7 +53,7 @@ void print()
  * @return template <typename T, typename... Types>
  */
 template <typename T, typename... Types>
-void print(T arg1, Types ...arg2) // function argument receiving a parameter pack
+void print(T arg1, Types... arg2) // function argument receiving a parameter pack
 {
 	std::cout << arg1 << std::endl;
 

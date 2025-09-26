@@ -5,7 +5,7 @@ template <typename T>
 class shared_ptr
 {
 public:
-    explicit shared_ptr(T* t = nullptr) : m_ptr(t), m_refCount(new int(1))
+    explicit shared_ptr(T* t = nullptr) : m_ptr(t), m_refCount( t ? new int(1) : nullptr)
     {
         std::cout << "constructor invoked \n";
     }
@@ -73,7 +73,6 @@ public:
     [[nodiscard]] int use_count() const { return m_refCount ? *m_refCount : 0; }
 
 private:
-
     void release()
     {
         if (m_refCount && --(*m_refCount) == 0)
@@ -88,8 +87,11 @@ private:
     int* m_refCount;
 };
 
+
 int main()
 {
+
+    shared_ptr<int> sp (new int (4));
 
 
     return 0;
