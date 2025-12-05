@@ -48,8 +48,8 @@ void print()
  * @brief Variadic function template that takes variable number of arguments
  * and prints all of them, function call with >= 1 argument gets matched here
  * 
- * @param var1 
- * @param var2 
+ * @param var 
+ * @param var2
  * @return template <typename T, typename... Types>
  */
 template <typename T, typename... Types>

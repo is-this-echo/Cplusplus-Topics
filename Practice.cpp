@@ -22,34 +22,43 @@ void google(int t) {cout << "Case #" << t << ": ";}
 template <typename T>
 struct PoolAllocator
 {
-    T* allocate(size_t n)
-    {
+    using value_type = T;
 
+    PoolAllocator() : offset_(0) {}
+
+    T* allocate(size_t blocks)
+    {
+        int sizeReq = blocks * sizeof(T);
+
+        if (offset_ + sizeReq > sizeof(mempool_))
+            throw std::bad_alloc();
+        
+        T* ptr= reinterpret_cast<T*>(mempool_ + sizeReq);
+        offset_ += sizeReq;
+
+        return ptr;
     }
 
-    void deallocate(T* ptr, size_t n)
+    void deallocate(T* ptr, size_t /* n */)
     {
-
+        // not required as the mempool_ will be freed once it goes out of scope
     }
 
-    char mempool[5000];
+private:
+    char mempool_[50000];
+    int offset_;
 };
-
-template <typename T>
-struct X
-{
-    static const int abs = 1;
-};
-
 
 
 int main()
 {
-    fastio();
-
-    int ans = typeid(X<int>) == typeid(X<char>);
-    std::cout << ans;
+    std::vector<char, PoolAllocator<int>> vec;
+    for (auto ch = 'a'; ch <= 'z'; ++ch)
+        vec.emplace_back(ch);
     
+    for (const auto ch : vec)
+        std::cout << ch << " ";
+
     return 0;
 }
 

@@ -114,7 +114,7 @@ public:
     {
         delete[] data; // release memory
         std::cout << "WidgetHeap object destructed successfully! \n";
-     } 
+    } 
 
     void do_something() {}
 };
