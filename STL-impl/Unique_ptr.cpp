@@ -12,7 +12,7 @@ public:
 
   ~unique_pointer()
   {
-    if (mPtr)
+    if (mPtr) // no if check required, can directly delete and its safe
     {
       delete mPtr;
       std::cout << "Unique Pointer Destructed\n";
@@ -56,10 +56,18 @@ public:
 
   void reset(T* rhs = nullptr)
   {
-    if (mPtr)
+    if (mPtr) // if check not needed
       delete mPtr;
 
     mPtr = rhs;
+  }
+
+  [[nodiscard]] T* release() noexcept // use nodiscard to avoid memory leaks by giving a compile-time warning
+  {
+    T* prev = mPtr;
+    mPtr = nullptr;
+    
+    return prev;
   }
 
   T* get() const { return mPtr; }

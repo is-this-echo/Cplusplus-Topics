@@ -19,45 +19,114 @@ ll gcd(ll a, ll b) {if (b > a) {return gcd(b, a);} if (b == 0) {return a;} retur
 void google(int t) {cout << "Case #" << t << ": ";}
 
 
-template <typename T>
-struct PoolAllocator
+
+DummyClass createObj()
 {
-    using value_type = T;
+    // NRVO - Named RVO
+    auto sampleObj = DummyClass(5);
+    return sampleObj;
+}
 
-    PoolAllocator() : offset_(0) {}
-
-    T* allocate(size_t blocks)
-    {
-        int sizeReq = blocks * sizeof(T);
-
-        if (offset_ + sizeReq > sizeof(mempool_))
-            throw std::bad_alloc();
-        
-        T* ptr= reinterpret_cast<T*>(mempool_ + sizeReq);
-        offset_ += sizeReq;
-
-        return ptr;
-    }
-
-    void deallocate(T* ptr, size_t /* n */)
-    {
-        // not required as the mempool_ will be freed once it goes out of scope
-    }
-
-private:
-    char mempool_[50000];
-    int offset_;
-};
-
+DummyClass createObj2()
+{
+    // URVO - Unnamed RVO
+    return DummyClass(5);
+}
 
 int main()
 {
-    std::vector<char, PoolAllocator<int>> vec;
-    for (auto ch = 'a'; ch <= 'z'; ++ch)
-        vec.emplace_back(ch);
-    
-    for (const auto ch : vec)
-        std::cout << ch << " ";
+    DummyClass dc = createObj();
+    DummyClass dc2 = createObj2();
+
+    return 0;
+}
+
+namespace custom
+{
+template <typename T>
+class unique_ptr
+{
+public:
+    explicit unique_ptr(T* ptr = nullptr) : ptr_(ptr)
+    {
+        std::cout << "unique pointer constructed!";
+    }
+
+    ~unique_ptr()
+    {
+        delete ptr_;
+        std::cout << "unique pointer destructed!";
+    }
+
+    unique_ptr(const unique_ptr& rhs) = delete;
+    unique_ptr& operator=(const unique_ptr& rhs) = delete;
+
+    unique_ptr(unique_ptr&& rhs) noexcept : ptr_(rhs.ptr_)
+    {
+        rhs.ptr_ = nullptr;
+        std::cout << "Move constructed invoked!";
+    }
+
+    unique_ptr& operator=(unique_ptr&& rhs) noexcept
+    {
+        if (this != &rhs)
+        {
+            delete ptr_;
+
+            this->ptr_ = rhs.ptr_;
+            rhs.ptr_ = nullptr;
+            std::cout << "Move assignment operator invoked!";
+        }
+        return *this;
+    }
+
+    T& operator*() const { return *ptr_; }
+    T* operator->() const { return ptr_; }
+
+    void reset(T* ptr = nullptr)
+    {
+        delete ptr_;
+        ptr_ = ptr;
+    }
+
+    T* get() const { return ptr_; }
+
+    explicit operator bool() const { return ptr_ != nullptr; }
+ 
+private:
+    T* ptr_;
+};
+
+
+template <typename T>
+class shared_ptr
+{
+public:
+    explicit shared_ptr(T* ptr = nullptr) : ptr_(ptr), refCount_(ptr_ ? new int(1) : 0) {}
+
+    shared_ptr(const shared_ptr& rhs) : ptr_(rhs.ptr_), refCount_(rhs.refCount_)
+    {
+        ++(*refCount_);
+    }
+
+private:
+    T* ptr_;
+    int* refCount_;
+};
+
+} // custom namespace
+
+int main()
+{
+    custom::unique_ptr<std::string> uptr(new std::string{"anbc"});
+    std::cout << *uptr;
+
+    custom::unique_ptr<std::string> uptr2{std::move(uptr)};
+    // std::cout << *uptr;
+    std::cout << *uptr2;
+
+    uptr = std::move(uptr2);
+    std::cout << *uptr;
 
     return 0;
 }
