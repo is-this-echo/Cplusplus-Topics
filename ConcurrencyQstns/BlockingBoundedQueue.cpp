@@ -21,7 +21,7 @@ public:
         queue_.push(element);
         ++count_;
 
-        // Notify one waiting thread (if any) that an item is now available for dequeue
+        // Notify one waiting thread on consumer side (if any) that an item is now available for dequeue
         not_empty_condition_.notify_one();
     }
 

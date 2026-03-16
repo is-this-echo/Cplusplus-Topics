@@ -2,6 +2,9 @@
 #include <third_party_lib.h> 
 
 
+// https://herbsutter.com/gotw/_100/
+
+
 /*
     When to use pIMpl class design :
     -------------------------------

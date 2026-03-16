@@ -6,7 +6,7 @@
 
     2) Leaky Encapsulation: The header reveals internal details like the use of ThirdPartyObject, which might be an implementation choice we want to keep flexible.
 
-    3) Rigidity and Tight Coupling: Our code is now directly tied to third_party_lib.h. If this library changes, our code might break
+    3) Rigidity and Tight Coupling: Our code is now directly tied to third_party_lib.h. If this library changes, our code might break.
 */
 
 #include <vector>

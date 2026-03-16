@@ -132,3 +132,39 @@ int main()
 }
 
 
+// Person.hpp
+class Person
+{
+public: 
+    std::string name;
+
+    Person();
+    ~Person();
+
+    void greet();
+
+private:
+    class PersonImpl;
+    std::unique_ptr<PersonImpl> impl;
+};
+
+// Person.cpp
+class Person::PersonImpl
+{
+public:
+    void greet(Person* p);
+};
+
+void Person::PersonImpl::greet(Person* p)
+{
+    std::cout << "Hello "<< p->name << " from Impl!";
+}
+
+Person::Person() : impl(make_unique<PersonImpl>()) {}
+
+Person::~Person() {}
+
+void Person::greet()
+{
+    impl->greet(this);
+}
