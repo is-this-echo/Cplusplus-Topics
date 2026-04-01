@@ -17,14 +17,18 @@ double eps = 1e-12;
 
 ll gcd(ll a, ll b) {if (b > a) {return gcd(b, a);} if (b == 0) {return a;} return gcd(b, a % b);}
 void google(int t) {cout << "Case #" << t << ": ";}
-    
- 
 
-void solve(){
+
+
+void solve()
+{
 }
-    
-int main() {
+
+
+int main()
+{
     fastio();
     
     return 0;
 }
+
