@@ -21,6 +21,7 @@ Setting thread priorities doesn't guarantee improved performance in all scenario
 This approach allows you to conditionally execute code blocks in different priority threads based on variable values, providing fine-grained control over task scheduling and system resource utilization.
 */
 
+#include <iostream>
 #include <thread>
 #include <queue>
 #include <functional>
@@ -28,34 +29,42 @@ This approach allows you to conditionally execute code blocks in different prior
 #include <condition_variable>
 #include <vector>
 
-class PriorityThreadPool {
+class PriorityThreadPool
+{
 public:
-    enum TaskPriority {
+    enum TaskPriority
+    {
         LOW = 0,
         NORMAL = 1,
         HIGH = 2
     };
 
-    struct Task {
+    struct Task
+    {
         std::function<void()> function;
         TaskPriority priority;
         
-        bool operator<(const Task& other) const {
+        bool operator<(const Task& other) const
+        {
             return priority < other.priority; // Higher priority first
         }
     };
 
-    PriorityThreadPool(size_t numThreads) {
-        for (size_t i = 0; i < numThreads; ++i) {
-            workers.emplace_back([this] {
-                while (true) {
+    PriorityThreadPool(size_t numThreads)
+    {
+        for (size_t i = 0; i < numThreads; ++i)
+        {
+            workers.emplace_back([this]()
+            {
+                while (true)
+                {
                     Task task;
                     {
                         std::unique_lock<std::mutex> lock(queueMutex);
                         condition.wait(lock, [this] { return !tasks.empty() || stop; });
-                        
+
                         if (stop && tasks.empty()) return;
-                        
+
                         task = tasks.top();
                         tasks.pop();
                     }
@@ -65,7 +74,8 @@ public:
         }
     }
 
-    void enqueue(std::function<void()> function, TaskPriority priority) {
+    void enqueue(std::function<void()> function, TaskPriority priority)
+    {
         {
             std::unique_lock<std::mutex> lock(queueMutex);
             tasks.emplace(Task{function, priority});
@@ -73,20 +83,21 @@ public:
         condition.notify_one();
     }
 
-    ~PriorityThreadPool() {
+    ~PriorityThreadPool()
+    {
         {
             std::unique_lock<std::mutex> lock(queueMutex);
             stop = true;
         }
+
         condition.notify_all();
-        for (std::thread& worker : workers) {
+        for (std::thread& worker : workers)
             worker.join();
-        }
     }
 
 private:
     std::vector<std::thread> workers;
-    std::priority_queue<Task> tasks;
+    std::priority_queue<Task> tasks; // max-heap
     std::mutex queueMutex;
     std::condition_variable condition;
     bool stop = false;
@@ -98,13 +109,18 @@ int main()
     std::string variable = "xyz";
 
     // Add tasks based on variable value
-    if (variable == "xyz") {
-        pool.enqueue([]() {
+    if (variable == "xyz")
+    {
+        pool.enqueue([]()
+        {
             std::cout << "High priority task executing" << std::endl;
             // High priority work
         }, PriorityThreadPool::HIGH);
-    } else {
-        pool.enqueue([]() {
+    }
+    else
+    {
+        pool.enqueue([]()
+        {
             std::cout << "Low priority task executing" << std::endl;
             // Low priority work
         }, PriorityThreadPool::LOW);

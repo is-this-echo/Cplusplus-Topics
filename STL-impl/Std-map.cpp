@@ -22,13 +22,14 @@ void google(int t) {cout << "Case #" << t << ": ";}
 
 void solve()
 {
+
 }
 
 
 int main()
 {
     fastio();
-    
+
     return 0;
 }
 

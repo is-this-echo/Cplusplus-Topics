@@ -17,18 +17,29 @@ double eps = 1e-12;
 
 ll gcd(ll a, ll b) {if (b > a) {return gcd(b, a);} if (b == 0) {return a;} return gcd(b, a % b);}
 void google(int t) {cout << "Case #" << t << ": ";}
+    
+ 
 
+class A
+{
+public:
+    void* operator new(size_t size)
+	{
+      std::cout << "Custom new\n";
+      return malloc(size);
+    }
 
-
-
-
+    void operator delete(void* ptr)
+	{
+      std::cout << "Custom delete\n";
+      free(ptr);
+    }
+};
 
 
 int main()
 {
-
-
-
+    fastio();
+    
     return 0;
 }
-

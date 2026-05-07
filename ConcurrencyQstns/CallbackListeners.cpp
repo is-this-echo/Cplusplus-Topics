@@ -49,10 +49,53 @@ public:
             local_callbacks = callbacks_;
         }
 
-        // Execute outside lock (VERY IMPORTANT)
-        for (auto& cb : local_callbacks) {
-            cb();
+        // Execute outside lock to avoid holding the lock while executing arbitrary
+        // user code—which prevents deadlocks, reduces contention, and keeps your system responsive.
+
+    /*
+    If you did this instead:
+    void eventFired()
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        for (auto& cb : callbacks_) {
+            cb();  // ❌ executing under lock
         }
+    }
+
+    1. Deadlock risk (biggest problem)
+    -----------------------------------
+    A callback might call back into the same system:
+    eventSystem.registerCallback(...);
+    That tries to lock mutex_ again → deadlock.
+    Even worse:
+    callbacks are user-controlled code → you have zero guarantees about what they do.
+
+
+    2. Lock contention / performance issues
+    ----------------------------------------
+    If a callback:
+    does I/O
+    sleeps
+    takes long computation
+    Then your mutex is held for that entire duration.
+
+    👉 Result:
+    Other threads trying to registerCallback() get blocked
+    System becomes sluggish
+
+
+    3. Iterator invalidation / modification during iteration
+    --------------------------------------------------------
+    Imagine a callback does:
+    eventSystem.registerCallback(...);
+
+    If you're iterating directly over callbacks_, you risk:
+    vector reallocation
+    iterator invalidation
+    undefined behavior 💥
+    */
+        for (auto& cb : local_callbacks)
+            cb();
     }
 
 private:
